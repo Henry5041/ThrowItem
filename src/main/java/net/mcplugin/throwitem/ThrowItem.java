@@ -1,6 +1,6 @@
 package net.mcplugin.throwitem;
 
-import net.mcplugin.throwitem.events.EntityThrowItemEvent;
+import net.mcplugin.throwitem.events.EntityThrowEntityEvent;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,13 +19,7 @@ public class ThrowItem {
 		this.entity = entity;
 		this.stack = stack;
 		this.force = 1;
-		if (stack.getType() != Material.AIR) {
-			EntityThrowItemEvent e = new EntityThrowItemEvent(entity, stack,
-					force);
-			// Make sure the event isn't cancelled.
-			if (!e.isCancelled())
-				this.lunch();
-		}
+		this.lunch();
 
 	}
 
@@ -33,28 +27,31 @@ public class ThrowItem {
 		this.entity = entity;
 		this.stack = stack;
 		this.force = force;
-		if (stack.getType() != Material.AIR) {
-			EntityThrowItemEvent e = new EntityThrowItemEvent(entity, stack,
-					force);
-			// Make sure the event isn't cancelled.
-			if (!e.isCancelled())
-				this.lunch();
-		}
+		this.lunch();
+
 	}
 
 	public void lunch() {
-		Location loc;
-		if (entity instanceof LivingEntity){
-			loc = ((LivingEntity) entity).getEyeLocation();
-		} else {
-			loc = entity.getLocation();
+		if (stack.getType() != Material.AIR) {
+
+			Location loc;
+			if (entity instanceof LivingEntity) {
+				loc = ((LivingEntity) entity).getEyeLocation();
+			} else {
+				loc = entity.getLocation();
+			}
+			Vector velocity = loc.getDirection().multiply(force);
+			Item item = loc.getWorld().dropItem(loc, stack);
+			EntityThrowEntityEvent e = new EntityThrowEntityEvent(entity, item,
+					force);
+
+			// Prevent item from being picked up by setting pick up delay.
+			item.setPickupDelay(10);
+			item.setVelocity(velocity);
+
+			// Make sure the event isn't cancelled.
+			if (e.isCancelled())
+				item.remove();
 		}
-		Vector velocity = loc.getDirection().multiply(force);
-		Item item = loc.getWorld().dropItem(loc, stack);
-
-		// Prevent item from being picked up by setting pick up delay.
-		item.setPickupDelay(10);
-		item.setVelocity(velocity);
-
 	}
 }

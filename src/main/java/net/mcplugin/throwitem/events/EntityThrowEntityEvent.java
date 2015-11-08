@@ -6,18 +6,18 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 
-public class EntityThrowItemEvent extends Event implements Cancellable {
+public class EntityThrowEntityEvent extends Event implements Cancellable {
 
-	private static final HandlerList handlers = new HandlerList();
-	private boolean cancelled;
+	protected static final HandlerList handlers = new HandlerList();
+	protected boolean cancelled;
 
-	private final Entity thrower;
-	private final ItemStack item;
-	private final float force;
+	protected final Entity thrower;
+	protected final Entity throwee;
+	protected final float force;
 
-	public EntityThrowItemEvent(Entity thrower, ItemStack item, float force) {
+	public EntityThrowEntityEvent(Entity thrower, Entity throwee, float force) {
 		this.thrower = thrower;
-		this.item = item;
+		this.throwee = throwee;
 		this.force = force;
 	}
 
@@ -42,8 +42,8 @@ public class EntityThrowItemEvent extends Event implements Cancellable {
 		return thrower;
 	}
 
-	public ItemStack getItem() {
-		return item;
+	public Entity getThrowee() {
+		return throwee;
 	}
 
 	public float getForce() {
